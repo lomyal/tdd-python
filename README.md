@@ -1,2 +1,2 @@
-# tdd-python
-tdd learning 
+# Test-Driven Development with Python
+TDD learning 
