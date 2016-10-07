@@ -14,7 +14,7 @@ def view_list(request, list_id):
             item = Item.objects.create(text=request.POST['item_text'], list=list_)
             item.full_clean()  # hacks to make Django to run full validation
             item.save()
-            return redirect('/lists/%d/' % (list_.id,))
+            return redirect(list_)
         except ValidationError:
             item.delete()  # this line is not in the book, added by me
             error = "You can't have an empty list item"
@@ -31,5 +31,5 @@ def new_list(request):
         list_.delete()
         error = "You can't have an empty list item"
         return render(request, 'home.html', {'error': error}) 
-    return redirect('/lists/%d/' % (list_.id,))
+    return redirect(list_)  # P189 in the book, get_absolute_url for redirects
 
