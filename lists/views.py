@@ -9,29 +9,20 @@ def home_page(request):
 
 def view_list(request, list_id):
     list_ = List.objects.get(id=list_id)
-    error = None
-
+    form = ItemForm()
     if request.method == 'POST':
-        try:
+        form = ItemForm(data=request.POST)
+        if form.is_valid():
             item = Item.objects.create(text=request.POST['text'], list=list_)
-            item.full_clean()  # hacks to make Django to run full validation
-            item.save()
             return redirect(list_)
-        except ValidationError:
-            item.delete()  # this line is not in the book, added by me
-            error = "You can't have an empty list item"
-
-    return render(request, 'list.html', {'list': list_, 'error': error})
+    return render(request, 'list.html', {'list': list_, 'form': form})
 
 def new_list(request):
-    list_ = List.objects.create()
-    item = Item.objects.create(text=request.POST['text'], list=list_)
-    try:
-        item.full_clean()  # hacks to make Django to run full validation
-        item.save()
-    except ValidationError:
-        list_.delete()
-        error = "You can't have an empty list item"
-        return render(request, 'home.html', {'error': error}) 
-    return redirect(list_)  # P189 in the book, get_absolute_url for redirects
+    form = ItemForm(data=request.POST)
+    if form.is_valid():
+        list_ = List.objects.create()
+        item = Item.objects.create(text=request.POST['text'], list=list_)
+        return redirect(list_)
+    else:
+        return render(request, 'home.html', {'form': form})
 
